@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MultiMaster - Eagles Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --kelly-green: #004C54;
+      --bright-green: #00FF7F;
+      --neon-green: #39FF14;
+      --black: #0A0A0A;
+      --dark-gray: #1A1A1A;
+      --silver: #A5ACAF;
+      --white: #FFFFFF;
+      --accent: #00D4AA;
+      --glow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+    
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Animated Background */
+    .animated-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 76, 84, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 76, 84, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      inset: 0;
+    }
+    
+    .shape {
+      position: absolute;
+      width: 10px; height: 10px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 10s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Screen */
+    .screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .screen.hidden { display: none; }
+    
+    /* Logo */
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo-icon {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 60px;
+      font-weight: 900;
+      color: var(--neon-green);
+      text-shadow: var(--glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--neon-green), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .logo-subtitle {
+      font-size: 12px;
+      color: var(--silver);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-top: 5px;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    /* Container */
+    .container {
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    /* Cards */
+    .card {
+      background: rgba(26, 26, 26, 0.95);
+      border: 2px solid var(--kelly-green);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .card h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--bright-green);
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    
+    .card p {
+      color: var(--silver);
+      margin-bottom: 15px;
+    }
+    
+    /* Inputs */
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      max-width: 300px;
+      padding: 15px 20px;
+      font-size: 20px;
+      font-family: 'Exo 2', sans-serif;
+      background: var(--black);
+      border: 2px solid var(--kelly-green);
+      border-radius: 15px;
+      color: var(--white);
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+    
+    input:focus {
+      border-color: var(--neon-green);
+      box-shadow: var(--glow);
+    }
+    
+    input::placeholder { color: var(--silver); }
+    
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+    
+    .code-input {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      letter-spacing: 10px;
+      color: var(--neon-green);
+      text-transform: uppercase;
+    }
+    
+    /* Buttons */
+    .btn {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 5px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--kelly-green), var(--accent));
+      color: var(--white);
+      box-shadow: 0 5px 20px rgba(0, 212, 170, 0.3);
+    }
+    
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4); }
+    
+    .btn-secondary {
+      background: transparent;
+      color: var(--silver);
+      border: 2px solid var(--kelly-green);
+    }
+    
+    .btn-secondary:hover { border-color: var(--neon-green); color: var(--neon-green); }
+    
+    .btn-large {
+      padding: 20px 40px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    /* Menu Buttons */
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      padding: 20px;
+      background: rgba(26, 26, 26, 0.9);
+      border: 2px solid var(--kelly-green);
+      border-radius: 15px;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    
+    .menu-btn:hover {
+      border-color: var(--neon-green);
+      transform: translateX(10px);
+      box-shadow: var(--glow);
+    }
+    
+    .menu-btn .icon { font-size: 30px; }
+    .menu-btn .text { font-family: 'Orbitron', sans-serif; font-size: 16px; }
+    .menu-btn .desc { font-size: 12px; color: var(--silver); }
+    
+    /* Avatar Grid */
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .avatar-option {
+      width: 50px; height: 50px;
+      font-size: 24px;
+      background: var(--black);
+      border: 2px solid var(--kelly-green);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .avatar-option:hover { border-color: var(--bright-green); transform: scale(1.1); }
+    .avatar-option.selected { border-color: var(--neon-green); background: rgba(57, 255, 20, 0.2); box-shadow: var(--glow); }
+    
+    /* Password Grid */
+    .password-display {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .password-slot {
+      width: 60px; height: 60px;
+      font-size: 28px;
+      background: var(--black);
+      border: 3px solid var(--kelly-green);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--silver);
+      transition: all 0.3s ease;
+    }
+    
+    .password-slot.filled { border-color: var(--neon-green); color: var(--white); }
+    
+    .password-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-items: center;
+    }
+    
+    .password-option {
+      width: 70px; height: 70px;
+      font-size: 32px;
+      background: var(--dark-gray);
+      border: 2px solid var(--kelly-green);
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .password-option:hover { border-color: var(--bright-green); transform: scale(1.1); }
+    
+    /* Game Code Display */
+    .code-display {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--neon-green);
+      letter-spacing: 15px;
+      text-shadow: var(--glow);
+      margin: 20px 0;
+    }
+    
+    /* Player List */
+    .player-list {
+      margin: 20px 0;
+    }
+    
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      background: var(--black);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    
+    .player-avatar {
+      font-size: 24px;
+    }
+    
+    .player-name {
+      flex: 1;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .badge {
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .badge-you { background: var(--neon-green); color: var(--black); }
+    .badge-host { background: var(--accent); color: var(--black); }
+    
+    /* Settings */
+    .settings-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .settings-group h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: var(--silver);
+      margin-bottom: 10px;
+    }
+    
+    .settings-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .setting-btn {
+      padding: 10px 15px;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 13px;
+      background: var(--black);
+      border: 2px solid var(--kelly-green);
+      border-radius: 8px;
+      color: var(--silver);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .setting-btn:hover { border-color: var(--bright-green); color: var(--white); }
+    .setting-btn.active { background: var(--kelly-green); border-color: var(--neon-green); color: var(--white); }
+    
+    /* Waiting Animation */
+    .waiting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--silver);
+      margin-top: 15px;
+    }
+    
+    .pulse-dot {
+      width: 10px; height: 10px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      animation: pulseDot 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+    
+    /* Question Card */
+    .question-card {
+      background: rgba(26, 26, 26, 0.95);
+      border: 3px solid var(--kelly-green);
+      border-radius: 25px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .question-card.correct { border-color: var(--neon-green); box-shadow: 0 0 40px rgba(57, 255, 20, 0.3); }
+    .question-card.incorrect { border-color: #FF4444; box-shadow: 0 0 40px rgba(255, 68, 68, 0.3); }
+    
+    .question-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .question-text .num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    
+    .question-text .op {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 40px;
+      color: var(--neon-green);
+    }
+    
+    .answer-input {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--neon-green);
+      width: 150px;
+    }
+    
+    /* Timer */
+    .timer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    
+    .timer-circle {
+      width: 80px; height: 80px;
+      position: relative;
+    }
+    
+    .timer-circle svg {
+      transform: rotate(-90deg);
+      width: 80px; height: 80px;
+    }
+    
+    .timer-track { fill: none; stroke: var(--dark-gray); stroke-width: 6; }
+    .timer-progress { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dasharray 1s linear; }
+    
+    .timer-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    .timer-low .timer-text { color: #FF4444; animation: blink 0.5s ease infinite; }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Live Scores */
+    .live-scores {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-width: 200px;
+    }
+    
+    .live-score {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--dark-gray);
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+    }
+    
+    .live-score.you { background: rgba(57, 255, 20, 0.2); border: 2px solid var(--neon-green); }
+    .live-score .rank { font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--silver); }
+    .live-score .score { font-family: 'Orbitron', sans-serif; font-weight: 700; margin-left: auto; }
+    
+    /* Number Pad */
+    .number-pad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+      max-width: 350px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .num-btn {
+      width: 55px; height: 55px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      background: var(--dark-gray);
+      border: 2px solid var(--kelly-green);
+      border-radius: 12px;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .num-btn:hover { background: var(--kelly-green); border-color: var(--neon-green); transform: scale(1.05); }
+    .num-btn:active { transform: scale(0.95); }
+    .num-btn.clear { background: #FF4444; border-color: #FF4444; }
+    
+    /* Quit Button */
+    .quit-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--kelly-green);
+      border: 2px solid var(--neon-green);
+      border-radius: 8px;
+      color: var(--white);
+      cursor: pointer;
+      z-index: 100;
+    }
+    
+    .quit-btn:hover { background: #FF4444; border-color: #FF6666; }
+    
+    /* Results */
+    .results-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      color: var(--bright-green);
+      margin-bottom: 30px;
+    }
+    
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .podium-place {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      background: rgba(26, 26, 26, 0.9);
+      border-radius: 15px;
+      border: 2px solid var(--kelly-green);
+      min-width: 90px;
+    }
+    
+    .podium-place.place-1 { border-color: #FFD700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); order: 2; padding-bottom: 30px; }
+    .podium-place.place-2 { border-color: #C0C0C0; order: 1; }
+    .podium-place.place-3 { border-color: #CD7F32; order: 3; }
+    
+    .podium-avatar { font-size: 32px; }
+    .podium-name { font-family: 'Orbitron', sans-serif; font-size: 12px; margin-top: 5px; }
+    .podium-score { color: var(--silver); font-size: 11px; }
+    .podium-badge { font-size: 24px; margin-top: 5px; }
+    
+    .your-stats {
+      background: rgba(26, 26, 26, 0.9);
+      border: 2px solid var(--neon-green);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--neon-green);
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--silver);
+      text-transform: uppercase;
+    }
+    
+    /* Feedback */
+    .feedback {
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+    
+    .feedback.correct { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); }
+    .feedback.incorrect { background: rgba(255, 68, 68, 0.1); color: #FF8888; }
+    
+    /* Streak */
+    .streak-display {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+    }
+    
+    .streak-icon { animation: fire 0.5s ease infinite alternate; }
+    
+    @keyframes fire {
+      from { transform: scale(1); }
+      to { transform: scale(1.2); }
+    }
+    
+    /* Coins */
+    .coin-display {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Orbitron', sans-serif;
+      color: #FFD700;
+    }
+    
+    /* User Info */
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(26, 26, 26, 0.9);
+      padding: 8px 15px;
+      border-radius: 30px;
+      border: 2px solid var(--kelly-green);
+      margin-bottom: 20px;
+    }
+    
+    .user-avatar { font-size: 24px; }
+    .user-name { font-family: 'Orbitron', sans-serif; font-size: 14px; }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    /* Error */
+    .error-msg {
+      color: #FF6666;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    
+    /* Connection Status */
+    .connection-status {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 100;
+    }
+    
+    .connection-status.connected { background: rgba(57, 255, 20, 0.2); color: var(--neon-green); }
+    .connection-status.disconnected { background: rgba(255, 68, 68, 0.2); color: #FF6666; }
+    
+    /* Hint */
+    .hint-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 212, 170, 0.1);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+    
+    .hint-icon { font-size: 24px; }
+    
+    /* Responsive */
+    @media (max-width: 500px) {
+      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+      .question-text .num { font-size: 42px; }
+      .question-text .op { font-size: 32px; }
+      .answer-input { font-size: 28px; width: 120px; }
+      .code-display { font-size: 36px; letter-spacing: 10px; }
+      .number-pad { grid-template-columns: repeat(4, 1fr); }
+      .num-btn { width: 50px; height: 50px; font-size: 18px; }
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-overlay.hidden { display: none; }
+    
+    .modal-content {
+      background: var(--dark-gray);
+      border: 3px solid var(--kelly-green);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      max-width: 350px;
+    }
+    
+    .modal-content h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: #FF8888;
+      margin-bottom: 15px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    /* Countdown */
+    .countdown-number {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 120px;
+      font-weight: 900;
+      color: var(--neon-green);
+      text-shadow: var(--glow);
+      animation: countPop 1s ease;
+    }
+    
+    @keyframes countPop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .countdown-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: var(--silver);
+    }
+    
+    /* Setup Instructions */
+    .setup-card {
+      background: rgba(255, 200, 0, 0.1);
+      border: 2px solid #FFD700;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .setup-card h3 {
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+    
+    .setup-card ol {
+      margin-left: 20px;
+      color: var(--silver);
+    }
+    
+    .setup-card li {
+      margin-bottom: 8px;
+    }
+    
+    .setup-card a {
+      color: var(--accent);
+    }
+    
+    .setup-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="bg-grid"></div>
+    <div class="floating-shapes" id="shapes"></div>
+  </div>
+
+  <!-- Connection Status -->
+  <div class="connection-status" id="connectionStatus">Connecting...</div>
+
+  <!-- SETUP SCREEN -->
+  <div class="screen" id="setupScreen">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">×</span>
+        <span class="logo-text">MultiMaster</span>
+        <span class="logo-subtitle">Eagles Edition</span>
+      </div>
+      
+      <div class="setup-card">
+        <h3>🔧 Quick Setup</h3>
+        <p>Your Firebase project: <strong>multiplication-app-prototype</strong></p>
+        <ol>
+          <li>Go to <a href="https://console.firebase.google.com/project/multiplication-app-prototype/database" target="_blank">Your Firebase Database</a></li>
+          <li>If no database exists, click <strong>"Create Database"</strong></li>
+          <li>Choose any location → Select <strong>"Start in test mode"</strong></li>
+          <li>Copy the URL shown at the top (starts with https://)</li>
+          <li>Paste below and click Connect!</li>
+        </ol>
+        <input type="text" class="setup-input" id="firebaseUrl" placeholder="https://multiplication-app-prototype-default-rtdb.firebaseio.com">
+        <p style="margin-top: 15px; font-size: 12px; color: var(--neon-green);">
+          💡 The URL is pre-filled - just click Connect to try it!
+        </p>
+      </div>
+      
+      <button class="btn btn-primary btn-large" onclick="connectFirebase()">Connect & Start</button>
+      
+      <p style="margin-top: 20px; color: var(--silver); font-size: 12px;">
+        Or try offline mode (same device only):
+        <button class="btn btn-secondary" onclick="useOfflineMode()" style="margin-left: 10px;">Offline Mode</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div class="screen hidden" id="loginScreen">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">×</span>
+        <span class="logo-text">MultiMaster</span>
+        <span class="logo-subtitle">Eagles Edition</span>
+      </div>
+      
+      <div class="card" id="nameStep">
+        <h2>What's your name, Math Champion?</h2>
+        <input type="text" id="playerName" placeholder="Enter your name..." maxlength="15">
+        <br>
+        <button class="btn btn-primary btn-large" onclick="goToAvatarStep()">Next →</button>
+      </div>
+      
+      <div class="card hidden" id="avatarStep">
+        <h2>Choose your Avatar!</h2>
+        <div class="avatar-grid" id="avatarGrid"></div>
+        <button class="btn btn-secondary" onclick="goToNameStep()">← Back</button>
+        <button class="btn btn-primary" onclick="goToPasswordStep()">Next →</button>
+      </div>
+      
+      <div class="card hidden" id="passwordStep">
+        <h2>Create Your Secret Code!</h2>
+        <p>Pick 3 pictures</p>
+        <div class="password-display" id="passwordDisplay"></div>
+        <div class="password-grid" id="passwordGrid"></div>
+        <button class="btn btn-secondary" onclick="goToAvatarStep()">← Back</button>
+        <button class="btn btn-secondary" onclick="clearPassword()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div class="screen hidden" id="menuScreen">
+    <div class="container">
+      <div class="header">
+        <div class="logo" style="margin-bottom: 0;">
+          <span class="logo-icon" style="font-size: 30px;">×</span>
+          <span class="logo-text" style="font-size: 18px;">MultiMaster</span>
+        </div>
+        <div class="user-info">
+          <span class="user-avatar" id="menuAvatar">🦅</span>
+          <span class="user-name" id="menuName">Player</span>
+          <div class="coin-display">
+            <span>🪙</span>
+            <span id="menuCoins">100</span>
+          </div>
+        </div>
+      </div>
+      
+      <h2 style="font-family: 'Orbitron', sans-serif; color: var(--bright-green); margin-bottom: 10px;">
+        Welcome, <span id="welcomeName">Player</span>!
+      </h2>
+      <p style="color: var(--silver); margin-bottom: 30px;">Ready to master multiplication?</p>
+      
+      <button class="menu-btn" onclick="goToPractice()">
+        <span class="icon">🎯</span>
+        <div>
+          <span class="text">Practice Mode</span><br>
+          <span class="desc">Learn at your own pace</span>
+        </div>
+      </button>
+      
+      <button class="menu-btn" onclick="goToCompete()">
+        <span class="icon">⚔️</span>
+        <div>
+          <span class="text">Competition</span><br>
+          <span class="desc">Challenge your friends!</span>
+        </div>
+      </button>
+      
+      <button class="menu-btn" onclick="goToStats()">
+        <span class="icon">📊</span>
+        <div>
+          <span class="text">My Progress</span><br>
+          <span class="desc">View your achievements</span>
+        </div>
+      </button>
+      
+      <button style="background: transparent; border: none; color: var(--silver); margin-top: 20px; cursor: pointer;" onclick="logout()">
+        Switch Player
+      </button>
+    </div>
+  </div>
+
+  <!-- PRACTICE SCREEN -->
+  <div class="screen hidden" id="practiceScreen">
+    <div class="container">
+      <div class="header">
+        <button class="btn btn-secondary" onclick="goToMenu()">← Menu</button>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div class="coin-display">
+            <span>🪙</span>
+            <span id="practiceCoins">100</span>
+          </div>
+          <div class="streak-display">
+            <span class="streak-icon">🔥</span>
+            <span id="practiceStreak">0</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="settings-buttons" style="justify-content: center; margin-bottom: 20px;">
+        <button class="setting-btn active" onclick="setDifficulty('beginner', this)">Beginner</button>
+        <button class="setting-btn" onclick="setDifficulty('intermediate', this)">Intermediate</button>
+        <button class="setting-btn" onclick="setDifficulty('advanced', this)">Advanced</button>
+      </div>
+      
+      <div class="question-card" id="practiceCard">
+        <div class="question-text">
+          <span class="num" id="practiceNum1">5</span>
+          <span class="op">×</span>
+          <span class="num" id="practiceNum2">3</span>
+          <span class="op">=</span>
+        </div>
+        <input type="number" class="answer-input" id="practiceAnswer" placeholder="?">
+        <br><br>
+        <button class="btn btn-primary btn-large" onclick="checkPracticeAnswer()">Check ✓</button>
+        <div id="practiceFeedback"></div>
+      </div>
+      
+      <div id="practiceHint" class="hint-box hidden">
+        <span class="hint-icon">💡</span>
+        <span id="hintText"></span>
+      </div>
+      
+      <button class="btn btn-secondary hidden" id="hintBtn" onclick="showHint()" style="margin-top: 15px;">
+        Need a hint? 💡
+      </button>
+    </div>
+  </div>
+
+  <!-- COMPETE SETUP -->
+  <div class="screen hidden" id="competeScreen">
+    <div class="container">
+      <div class="header">
+        <button class="btn btn-secondary" onclick="goToMenu()">← Menu</button>
+        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--bright-green);">⚔️ Competition</h2>
+      </div>
+      
+      <div id="competeMenu">
+        <button class="menu-btn" onclick="createGame()">
+          <span class="icon">🎮</span>
+          <div>
+            <span class="text">Create Game</span><br>
+            <span class="desc">Start a new competition</span>
+          </div>
+        </button>
+        
+        <button class="menu-btn" onclick="showJoinGame()">
+          <span class="icon">🔗</span>
+          <div>
+            <span class="text">Join Game</span><br>
+            <span class="desc">Enter a game code</span>
+          </div>
+        </button>
+      </div>
+      
+      <div id="joinSection" class="card hidden">
+        <h2>Enter Game Code</h2>
+        <input type="text" class="code-input" id="joinCodeInput" placeholder="####" maxlength="4">
+        <div id="joinError" class="error-msg"></div>
+        <br>
+        <button class="btn btn-secondary" onclick="hideJoinGame()">← Back</button>
+        <button class="btn btn-primary" onclick="joinGame()">Join Game</button>
+      </div>
+      
+      <div id="lobbySection" class="card hidden">
+        <h2 id="lobbyTitle">Game Lobby</h2>
+        <div class="code-display" id="lobbyCode">----</div>
+        <p>Share this code with classmates!</p>
+        
+        <div id="hostSettings" class="hidden">
+          <div class="settings-group">
+            <h4>Difficulty</h4>
+            <div class="settings-buttons">
+              <button class="setting-btn" onclick="setGameDifficulty('beginner', this)">Beginner</button>
+              <button class="setting-btn active" onclick="setGameDifficulty('intermediate', this)">Intermediate</button>
+              <button class="setting-btn" onclick="setGameDifficulty('advanced', this)">Advanced</button>
+            </div>
+          </div>
+          <div class="settings-group">
+            <h4>Duration</h4>
+            <div class="settings-buttons">
+              <button class="setting-btn" onclick="setGameDuration(30, this)">30s</button>
+              <button class="setting-btn active" onclick="setGameDuration(60, this)">1m</button>
+              <button class="setting-btn" onclick="setGameDuration(120, this)">2m</button>
+              <button class="setting-btn" onclick="setGameDuration(180, this)">3m</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="player-list" id="lobbyPlayers"></div>
+        
+        <div class="waiting">
+          <span class="pulse-dot"></span>
+          <span id="waitingText">Waiting for players...</span>
+        </div>
+        
+        <br>
+        <button class="btn btn-primary btn-large hidden" id="startGameBtn" onclick="startGame()">Start Game! 🚀</button>
+        <button class="btn btn-secondary" onclick="leaveLobby()">Leave Lobby</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen hidden" id="gameScreen">
+    <button class="quit-btn" onclick="confirmQuit()">QUIT</button>
+    <div class="container">
+      <div class="timer-container">
+        <div class="timer-circle" id="timerCircle">
+          <svg viewBox="0 0 100 100">
+            <circle class="timer-track" cx="50" cy="50" r="45"></circle>
+            <circle class="timer-progress" id="timerProgress" cx="50" cy="50" r="45" style="stroke-dasharray: 283 283;"></circle>
+          </svg>
+          <span class="timer-text" id="timerText">60</span>
+        </div>
+        
+        <div class="live-scores" id="liveScores"></div>
+      </div>
+      
+      <div class="question-card" id="gameCard">
+        <div class="question-text">
+          <span class="num" id="gameNum1">5</span>
+          <span class="op">×</span>
+          <span class="num" id="gameNum2">3</span>
+          <span class="op">=</span>
+        </div>
+        <input type="number" class="answer-input" id="gameAnswer" placeholder="?">
+        <br><br>
+        <button class="btn btn-primary" onclick="submitGameAnswer()">GO!</button>
+      </div>
+      
+      <div class="number-pad">
+        <button class="num-btn" onclick="addDigit(1)">1</button>
+        <button class="num-btn" onclick="addDigit(2)">2</button>
+        <button class="num-btn" onclick="addDigit(3)">3</button>
+        <button class="num-btn" onclick="addDigit(4)">4</button>
+        <button class="num-btn" onclick="addDigit(5)">5</button>
+        <button class="num-btn" onclick="addDigit(6)">6</button>
+        <button class="num-btn" onclick="addDigit(7)">7</button>
+        <button class="num-btn" onclick="addDigit(8)">8</button>
+        <button class="num-btn" onclick="addDigit(9)">9</button>
+        <button class="num-btn" onclick="addDigit(0)">0</button>
+        <button class="num-btn clear" onclick="clearAnswer()">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN SCREEN -->
+  <div class="screen hidden" id="countdownScreen">
+    <div style="text-align: center;">
+      <span class="countdown-number" id="countdownNumber">3</span>
+      <div class="countdown-text">Get Ready!</div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen hidden" id="resultsScreen">
+    <div class="container">
+      <h1 class="results-title">🏁 Game Over!</h1>
+      
+      <div class="podium" id="podium"></div>
+      
+      <div class="your-stats">
+        <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px;">Your Results</h3>
+        <div class="stat-row">
+          <div class="stat">
+            <span class="stat-value" id="resultScore">0</span>
+            <div class="stat-label">Correct</div>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="resultRank">#1</span>
+            <div class="stat-label">Place</div>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="resultCoins">+0</span>
+            <div class="stat-label">Coins</div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary btn-large" onclick="goToMenu()">Continue</button>
+    </div>
+  </div>
+
+  <!-- STATS SCREEN -->
+  <div class="screen hidden" id="statsScreen">
+    <div class="container">
+      <div class="header">
+        <button class="btn btn-secondary" onclick="goToMenu()">← Menu</button>
+        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--bright-green);">📊 My Progress</h2>
+      </div>
+      
+      <div style="text-align: center; margin-bottom: 30px;">
+        <span style="font-size: 60px;" id="statsAvatar">🦅</span>
+        <h3 style="font-family: 'Orbitron', sans-serif; margin-top: 10px;" id="statsName">Player</h3>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+        <div class="card" style="padding: 20px;">
+          <div style="font-size: 24px;">🪙</div>
+          <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-green);" id="statsCoins">0</div>
+          <div style="font-size: 11px; color: var(--silver);">TOTAL COINS</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div style="font-size: 24px;">✅</div>
+          <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-green);" id="statsCorrect">0</div>
+          <div style="font-size: 11px; color: var(--silver);">CORRECT</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div style="font-size: 24px;">🎯</div>
+          <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-green);" id="statsAccuracy">0%</div>
+          <div style="font-size: 11px; color: var(--silver);">ACCURACY</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div style="font-size: 24px;">🔥</div>
+          <div style="font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--neon-green);" id="statsBestStreak">0</div>
+          <div style="font-size: 11px; color: var(--silver);">BEST STREAK</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIT MODAL -->
+  <div class="modal-overlay hidden" id="quitModal">
+    <div class="modal-content">
+      <h3>⚠️ Quit Competition?</h3>
+      <p style="color: var(--silver);">You'll lose coins from this round.</p>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="hideQuitModal()">Keep Playing</button>
+        <button class="btn btn-primary" style="background: #FF4444;" onclick="quitGame()">Yes, Quit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // APP STATE
+    // ============================================
+    
+    let db = null;
+    let isOnline = false;
+    let currentUser = null;
+    let currentGame = null;
+    let isHost = false;
+    let gameRef = null;
+    let gameListener = null;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let totalTime = 60;
+    let currentQuestion = null;
+    let score = 0;
+    let streak = 0;
+    let attempts = 0;
+    let practiceDifficulty = 'beginner';
+    let gameDifficulty = 'intermediate';
+    let gameDuration = 60;
+    
+    const AVATARS = ['🦅', '🚀', '⚡', '🌟', '🔥', '💎', '🎮', '🏆', '🦁', '🐉', '🦊', '🐺', '🦄', '🐙', '🦈', '🐯', '🤖', '👾', '🎯', '🛸', '🌈', '🎪', '🎭', '🎨'];
+    const PASSWORD_IMAGES = ['🌙', '☀️', '⭐', '🌊', '🌺', '🍎', '🎈', '🌲', '❄️'];
+    const DIFFICULTIES = { beginner: 5, intermediate: 9, advanced: 12 };
+    const ENCOURAGEMENTS = [
+      "Almost there! 🌟", "Keep going! 💪", "You're learning! 🚀",
+      "Try again! ⚡", "Getting stronger! 💎", "Don't give up! 🏆"
+    ];
+    
+    let selectedAvatar = null;
+    let password = [];
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    
+    // Create floating shapes
+    const shapesContainer = document.getElementById('shapes');
+    for (let i = 0; i < 10; i++) {
+      const shape = document.createElement('div');
+      shape.className = `shape`;
+      shape.style.left = `${Math.random() * 100}%`;
+      shape.style.animationDelay = `${Math.random() * 5}s`;
+      shape.style.animationDuration = `${8 + Math.random() * 10}s`;
+      shape.style.background = ['#39FF14', '#00FF7F', '#00D4AA', '#A5ACAF'][Math.floor(Math.random() * 4)];
+      shapesContainer.appendChild(shape);
+    }
+    
+    // Auto-connect with configured Firebase URL
+    const FIREBASE_URL = 'https://multiplication-app-prototype-default-rtdb.firebaseio.com';
+    const savedUrl = localStorage.getItem('multimaster_firebase_url') || FIREBASE_URL;
+    document.getElementById('firebaseUrl').value = savedUrl;
+    
+    // Auto-connect on load
+    setTimeout(() => {
+      connectFirebase();
+    }, 500);
+    
+    // Check for saved user
+    const savedUser = localStorage.getItem('multimaster_user');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+    }
+    
+    // ============================================
+    // FIREBASE CONNECTION
+    // ============================================
+    
+    function connectFirebase() {
+      let url = document.getElementById('firebaseUrl').value.trim();
+      
+      if (!url) {
+        alert('Please enter your Firebase database URL');
+        return;
+      }
+      
+      // Clean up URL - add https if missing
+      if (!url.startsWith('http')) {
+        url = 'https://' + url;
+      }
+      
+      // Remove trailing slash
+      url = url.replace(/\/$/, '');
+      
+      // If they just entered project ID, try to construct URL
+      if (!url.includes('firebaseio.com') && !url.includes('firebasedatabase.app')) {
+        url = `https://${url}-default-rtdb.firebaseio.com`;
+        document.getElementById('firebaseUrl').value = url;
+      }
+      
+      document.getElementById('connectionStatus').textContent = 'Connecting...';
+      document.getElementById('connectionStatus').className = 'connection-status';
+      
+      try {
+        // Initialize Firebase
+        const config = { databaseURL: url };
+        
+        if (firebase.apps.length) {
+          firebase.app().delete().then(() => {
+            firebase.initializeApp(config);
+            testConnection(url);
+          });
+        } else {
+          firebase.initializeApp(config);
+          testConnection(url);
+        }
+        
+      } catch (e) {
+        alert('Failed to initialize Firebase: ' + e.message);
+        updateConnectionStatus(false);
+      }
+    }
+    
+    function testConnection(url) {
+      db = firebase.database();
+      
+      // Set a timeout for connection
+      const timeout = setTimeout(() => {
+        updateConnectionStatus(false);
+        alert('Connection timed out. Please check:\n\n1. Your database URL is correct\n2. You created a Realtime Database (not Firestore)\n3. Database rules are set to test mode\n\nYour URL: ' + url);
+      }, 10000);
+      
+      // Test connection
+      db.ref('.info/connected').on('value', (snap) => {
+        clearTimeout(timeout);
+        
+        if (snap.val() === true) {
+          isOnline = true;
+          updateConnectionStatus(true);
+          localStorage.setItem('multimaster_firebase_url', url);
+          
+          // Go to login or menu
+          if (currentUser) {
+            showScreen('menuScreen');
+            updateMenuUI();
+          } else {
+            showScreen('loginScreen');
+            initLoginScreen();
+          }
+        } else {
+          // Not connected yet, keep waiting
+          isOnline = false;
+          updateConnectionStatus(false);
+        }
+      }, (error) => {
+        clearTimeout(timeout);
+        updateConnectionStatus(false);
+        alert('Database error: ' + error.message + '\n\nMake sure your database rules allow read/write access.');
+      });
+    }
+    
+    function useOfflineMode() {
+      isOnline = false;
+      db = null;
+      updateConnectionStatus(false);
+      
+      if (currentUser) {
+        showScreen('menuScreen');
+        updateMenuUI();
+      } else {
+        showScreen('loginScreen');
+        initLoginScreen();
+      }
+    }
+    
+    function updateConnectionStatus(connected) {
+      const el = document.getElementById('connectionStatus');
+      if (connected) {
+        el.className = 'connection-status connected';
+        el.textContent = '🟢 Online';
+      } else {
+        el.className = 'connection-status disconnected';
+        el.textContent = '🔴 Offline';
+      }
+    }
+    
+    // ============================================
+    // SCREEN MANAGEMENT
+    // ============================================
+    
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+    
+    // ============================================
+    // LOGIN FLOW
+    // ============================================
+    
+    function initLoginScreen() {
+      // Avatar grid
+      const avatarGrid = document.getElementById('avatarGrid');
+      avatarGrid.innerHTML = AVATARS.map(a => 
+        `<button class="avatar-option" onclick="selectAvatar('${a}', this)">${a}</button>`
+      ).join('');
+      
+      // Password grid
+      const passwordGrid = document.getElementById('passwordGrid');
+      passwordGrid.innerHTML = PASSWORD_IMAGES.map(p => 
+        `<button class="password-option" onclick="addPassword('${p}')">${p}</button>`
+      ).join('');
+      
+      updatePasswordDisplay();
+    }
+    
+    function goToNameStep() {
+      document.getElementById('nameStep').classList.remove('hidden');
+      document.getElementById('avatarStep').classList.add('hidden');
+      document.getElementById('passwordStep').classList.add('hidden');
+    }
+    
+    function goToAvatarStep() {
+      const name = document.getElementById('playerName').value.trim();
+      if (name.length < 2) {
+        alert('Please enter your name (at least 2 characters)');
+        return;
+      }
+      document.getElementById('nameStep').classList.add('hidden');
+      document.getElementById('avatarStep').classList.remove('hidden');
+      document.getElementById('passwordStep').classList.add('hidden');
+    }
+    
+    function selectAvatar(avatar, btn) {
+      selectedAvatar = avatar;
+      document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+    
+    function goToPasswordStep() {
+      if (!selectedAvatar) {
+        alert('Please select an avatar');
+        return;
+      }
+      document.getElementById('nameStep').classList.add('hidden');
+      document.getElementById('avatarStep').classList.add('hidden');
+      document.getElementById('passwordStep').classList.remove('hidden');
+      password = [];
+      updatePasswordDisplay();
+    }
+    
+    function addPassword(img) {
+      if (password.length < 3) {
+        password.push(img);
+        updatePasswordDisplay();
+        
+        if (password.length === 3) {
+          setTimeout(finishLogin, 300);
+        }
+      }
+    }
+    
+    function clearPassword() {
+      password = [];
+      updatePasswordDisplay();
+    }
+    
+    function updatePasswordDisplay() {
+      const display = document.getElementById('passwordDisplay');
+      display.innerHTML = [0, 1, 2].map(i => 
+        `<div class="password-slot ${password[i] ? 'filled' : ''}">${password[i] || '?'}</div>`
+      ).join('');
+    }
+    
+    function finishLogin() {
+      const name = document.getElementById('playerName').value.trim();
+      const passwordStr = password.join('');
+      
+      // Check for existing user
+      const savedUsers = JSON.parse(localStorage.getItem('multimaster_users') || '[]');
+      const existing = savedUsers.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === passwordStr);
+      
+      if (existing) {
+        currentUser = existing;
+      } else {
+        currentUser = {
+          id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+          name: name,
+          avatar: selectedAvatar,
+          password: passwordStr,
+          coins: 100,
+          stats: { correct: 0, attempts: 0, bestStreak: 0, gamesPlayed: 0 }
+        };
+        savedUsers.push(currentUser);
+        localStorage.setItem('multimaster_users', JSON.stringify(savedUsers));
+      }
+      
+      localStorage.setItem('multimaster_user', JSON.stringify(currentUser));
+      
+      showScreen('menuScreen');
+      updateMenuUI();
+    }
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('multimaster_user');
+      showScreen('loginScreen');
+      goToNameStep();
+      document.getElementById('playerName').value = '';
+      selectedAvatar = null;
+      password = [];
+      document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      updatePasswordDisplay();
+    }
+    
+    // ============================================
+    // MENU
+    // ============================================
+    
+    function updateMenuUI() {
+      if (!currentUser) return;
+      document.getElementById('menuAvatar').textContent = currentUser.avatar;
+      document.getElementById('menuName').textContent = currentUser.name;
+      document.getElementById('menuCoins').textContent = currentUser.coins;
+      document.getElementById('welcomeName').textContent = currentUser.name;
+    }
+    
+    function goToMenu() {
+      cleanupGame();
+      showScreen('menuScreen');
+      updateMenuUI();
+    }
+    
+    // ============================================
+    // PRACTICE MODE
+    // ============================================
+    
+    function goToPractice() {
+      showScreen('practiceScreen');
+      streak = 0;
+      attempts = 0;
+      document.getElementById('practiceCoins').textContent = currentUser.coins;
+      document.getElementById('practiceStreak').textContent = streak;
+      generatePracticeQuestion();
+    }
+    
+    function setDifficulty(diff, btn) {
+      practiceDifficulty = diff;
+      document.querySelectorAll('.settings-buttons .setting-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      generatePracticeQuestion();
+    }
+    
+    function generatePracticeQuestion() {
+      const max = DIFFICULTIES[practiceDifficulty];
+      const num1 = Math.floor(Math.random() * max) + 1;
+      const num2 = Math.floor(Math.random() * max) + 1;
+      currentQuestion = { num1, num2, answer: num1 * num2 };
+      
+      document.getElementById('practiceNum1').textContent = num1;
+      document.getElementById('practiceNum2').textContent = num2;
+      document.getElementById('practiceAnswer').value = '';
+      document.getElementById('practiceFeedback').innerHTML = '';
+      document.getElementById('practiceCard').className = 'question-card';
+      document.getElementById('practiceHint').classList.add('hidden');
+      document.getElementById('hintBtn').classList.add('hidden');
+      attempts = 0;
+      
+      document.getElementById('practiceAnswer').focus();
+    }
+    
+    function checkPracticeAnswer() {
+      const input = document.getElementById('practiceAnswer');
+      const userAnswer = parseInt(input.value);
+      const feedback = document.getElementById('practiceFeedback');
+      const card = document.getElementById('practiceCard');
+      
+      if (isNaN(userAnswer)) return;
+      
+      if (userAnswer === currentQuestion.answer) {
+        // Correct!
+        card.className = 'question-card correct';
+        feedback.innerHTML = '<div class="feedback correct">🎉 Amazing! +20 coins!</div>';
+        streak++;
+        currentUser.coins += 20;
+        currentUser.stats.correct++;
+        currentUser.stats.attempts++;
+        currentUser.stats.bestStreak = Math.max(currentUser.stats.bestStreak, streak);
+        saveUser();
+        
+        document.getElementById('practiceCoins').textContent = currentUser.coins;
+        document.getElementById('practiceStreak').textContent = streak;
+        
+        setTimeout(generatePracticeQuestion, 1500);
+      } else {
+        // Incorrect
+        card.className = 'question-card incorrect';
+        feedback.innerHTML = `<div class="feedback incorrect">${ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)]}<br>The answer was ${currentQuestion.answer}</div>`;
+        streak = 0;
+        attempts++;
+        currentUser.stats.attempts++;
+        saveUser();
+        
+        document.getElementById('practiceStreak').textContent = streak;
+        
+        if (attempts >= 1) {
+          document.getElementById('hintBtn').classList.remove('hidden');
+        }
+        
+        setTimeout(() => {
+          card.className = 'question-card';
+          feedback.innerHTML = '';
+          input.value = '';
+          input.focus();
+        }, 2500);
+      }
+    }
+    
+    function showHint() {
+      const { num1, num2 } = currentQuestion;
+      let hint = '';
+      if (attempts === 1) {
+        hint = `Think of ${num1} groups of ${num2}`;
+      } else {
+        let skip = [];
+        for (let i = 1; i <= num2; i++) skip.push(num1 * i);
+        hint = `Count by ${num1}s: ${skip.join(', ')}`;
+      }
+      document.getElementById('hintText').textContent = hint;
+      document.getElementById('practiceHint').classList.remove('hidden');
+      document.getElementById('hintBtn').classList.add('hidden');
+    }
+    
+    // ============================================
+    // COMPETITION MODE
+    // ============================================
+    
+    function goToCompete() {
+      showScreen('competeScreen');
+      document.getElementById('competeMenu').classList.remove('hidden');
+      document.getElementById('joinSection').classList.add('hidden');
+      document.getElementById('lobbySection').classList.add('hidden');
+    }
+    
+    function showJoinGame() {
+      document.getElementById('competeMenu').classList.add('hidden');
+      document.getElementById('joinSection').classList.remove('hidden');
+      document.getElementById('joinCodeInput').value = '';
+      document.getElementById('joinError').textContent = '';
+      document.getElementById('joinCodeInput').focus();
+    }
+    
+    function hideJoinGame() {
+      document.getElementById('competeMenu').classList.remove('hidden');
+      document.getElementById('joinSection').classList.add('hidden');
+    }
+    
+    function generateGameCode() {
+      return Math.floor(1000 + Math.random() * 9000).toString();
+    }
+    
+    // CREATE GAME
+    function createGame() {
+      const code = generateGameCode();
+      currentGame = code;
+      isHost = true;
+      
+      const gameData = {
+        code: code,
+        hostId: currentUser.id,
+        status: 'lobby',
+        difficulty: gameDifficulty,
+        duration: gameDuration,
+        players: {},
+        createdAt: Date.now()
+      };
+      
+      gameData.players[currentUser.id] = {
+        id: currentUser.id,
+        name: currentUser.name,
+        avatar: currentUser.avatar,
+        score: 0,
+        isHost: true
+      };
+      
+      if (isOnline && db) {
+        // Save to Firebase
+        db.ref(`games/${code}`).set(gameData).then(() => {
+          showLobby(code);
+          listenToGame(code);
+        }).catch(e => {
+          alert('Failed to create game: ' + e.message);
+        });
+      } else {
+        // Offline mode - localStorage only
+        localStorage.setItem(`mm_game_${code}`, JSON.stringify(gameData));
+        showLobby(code);
+        // Poll localStorage
+        startOfflinePolling(code);
+      }
+    }
+    
+    // JOIN GAME
+    function joinGame() {
+      const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+      
+      if (code.length !== 4) {
+        document.getElementById('joinError').textContent = 'Please enter a 4-digit code';
+        return;
+      }
+      
+      if (isOnline && db) {
+        // Check Firebase
+        db.ref(`games/${code}`).once('value').then(snap => {
+          const gameData = snap.val();
+          
+          if (!gameData) {
+            document.getElementById('joinError').textContent = 'Game not found. Check the code and try again.';
+            return;
+          }
+          
+          if (gameData.status !== 'lobby') {
+            document.getElementById('joinError').textContent = 'Game already started!';
+            return;
+          }
+          
+          // Join the game
+          currentGame = code;
+          isHost = false;
+          
+          db.ref(`games/${code}/players/${currentUser.id}`).set({
+            id: currentUser.id,
+            name: currentUser.name,
+            avatar: currentUser.avatar,
+            score: 0,
+            isHost: false
+          }).then(() => {
+            showLobby(code);
+            listenToGame(code);
+          });
+        });
+      } else {
+        // Offline mode
+        const stored = localStorage.getItem(`mm_game_${code}`);
+        if (!stored) {
+          document.getElementById('joinError').textContent = 'Game not found. Make sure you\'re on the same device.';
+          return;
+        }
+        
+        const gameData = JSON.parse(stored);
+        if (gameData.status !== 'lobby') {
+          document.getElementById('joinError').textContent = 'Game already started!';
+          return;
+        }
+        
+        currentGame = code;
+        isHost = false;
+        
+        gameData.players[currentUser.id] = {
+          id: currentUser.id,
+          name: currentUser.name,
+          avatar: currentUser.avatar,
+          score: 0,
+          isHost: false
+        };
+        
+        localStorage.setItem(`mm_game_${code}`, JSON.stringify(gameData));
+        showLobby(code);
+        startOfflinePolling(code);
+      }
+    }
+    
+    function showLobby(code) {
+      document.getElementById('competeMenu').classList.add('hidden');
+      document.getElementById('joinSection').classList.add('hidden');
+      document.getElementById('lobbySection').classList.remove('hidden');
+      
+      document.getElementById('lobbyCode').textContent = code;
+      document.getElementById('lobbyTitle').textContent = isHost ? 'Your Game' : 'Joined Game';
+      
+      if (isHost) {
+        document.getElementById('hostSettings').classList.remove('hidden');
+        document.getElementById('startGameBtn').classList.remove('hidden');
+        document.getElementById('waitingText').textContent = 'Waiting for players to join...';
+      } else {
+        document.getElementById('hostSettings').classList.add('hidden');
+        document.getElementById('startGameBtn').classList.add('hidden');
+        document.getElementById('waitingText').textContent = 'Waiting for host to start...';
+      }
+    }
+    
+    function updateLobbyPlayers(players) {
+      const container = document.getElementById('lobbyPlayers');
+      const playerArray = Object.values(players || {});
+      
+      container.innerHTML = playerArray.map(p => `
+        <div class="player-item">
+          <span class="player-avatar">${p.avatar}</span>
+          <span class="player-name">${p.name}</span>
+          ${p.id === currentUser.id ? '<span class="badge badge-you">You</span>' : ''}
+          ${p.isHost ? '<span class="badge badge-host">Host</span>' : ''}
+        </div>
+      `).join('');
+    }
+    
+    // FIREBASE LISTENER
+    function listenToGame(code) {
+      if (!db) return;
+      
+      gameRef = db.ref(`games/${code}`);
+      gameListener = gameRef.on('value', snap => {
+        const data = snap.val();
+        if (!data) {
+          alert('Game was deleted');
+          goToCompete();
+          return;
+        }
+        
+        updateLobbyPlayers(data.players);
+        
+        // Check if game started
+        if (data.status === 'playing' && !isHost) {
+          gameDifficulty = data.difficulty;
+          gameDuration = data.duration;
+          startCountdown();
+        }
+        
+        // Check if game ended
+        if (data.status === 'ended') {
+          showResults(data.players);
+        }
+      });
+    }
+    
+    // OFFLINE POLLING
+    let offlineInterval = null;
+    function startOfflinePolling(code) {
+      if (offlineInterval) clearInterval(offlineInterval);
+      
+      offlineInterval = setInterval(() => {
+        const stored = localStorage.getItem(`mm_game_${code}`);
+        if (!stored) return;
+        
+        const data = JSON.parse(stored);
+        updateLobbyPlayers(data.players);
+        
+        if (data.status === 'playing' && !isHost) {
+          gameDifficulty = data.difficulty;
+          gameDuration = data.duration;
+          clearInterval(offlineInterval);
+          startCountdown();
+        }
+      }, 500);
+    }
+    
+    function setGameDifficulty(diff, btn) {
+      gameDifficulty = diff;
+      btn.parentElement.querySelectorAll('.setting-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    
+    function setGameDuration(dur, btn) {
+      gameDuration = dur;
+      btn.parentElement.querySelectorAll('.setting-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    
+    function startGame() {
+      if (!isHost) return;
+      
+      if (isOnline && db) {
+        db.ref(`games/${currentGame}`).update({
+          status: 'playing',
+          difficulty: gameDifficulty,
+          duration: gameDuration,
+          startedAt: Date.now()
+        });
+      } else {
+        const stored = localStorage.getItem(`mm_game_${currentGame}`);
+        if (stored) {
+          const data = JSON.parse(stored);
+          data.status = 'playing';
+          data.difficulty = gameDifficulty;
+          data.duration = gameDuration;
+          localStorage.setItem(`mm_game_${currentGame}`, JSON.stringify(data));
+        }
+      }
+      
+      startCountdown();
+    }
+    
+    function startCountdown() {
+      showScreen('countdownScreen');
+      let count = 3;
+      document.getElementById('countdownNumber').textContent = count;
+      
+      const countInterval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          document.getElementById('countdownNumber').textContent = count;
+        } else {
+          clearInterval(countInterval);
+          startGameplay();
+        }
+      }, 1000);
+    }
+    
+    function startGameplay() {
+      showScreen('gameScreen');
+      score = 0;
+      timeLeft = gameDuration;
+      totalTime = gameDuration;
+      
+      generateGameQuestion();
+      updateTimer();
+      updateLiveScores();
+      
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+        
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+      
+      // Sync scores periodically
+      if (isOnline && db) {
+        setInterval(() => {
+          if (currentGame) {
+            db.ref(`games/${currentGame}/players/${currentUser.id}/score`).set(score);
+          }
+        }, 1000);
+        
+        // Listen for score updates
+        db.ref(`games/${currentGame}/players`).on('value', snap => {
+          updateLiveScoresFromData(snap.val());
+        });
+      }
+    }
+    
+    function generateGameQuestion() {
+      const max = DIFFICULTIES[gameDifficulty];
+      const num1 = Math.floor(Math.random() * max) + 1;
+      const num2 = Math.floor(Math.random() * max) + 1;
+      currentQuestion = { num1, num2, answer: num1 * num2 };
+      
+      document.getElementById('gameNum1').textContent = num1;
+      document.getElementById('gameNum2').textContent = num2;
+      document.getElementById('gameAnswer').value = '';
+      document.getElementById('gameCard').className = 'question-card';
+      
+      document.getElementById('gameAnswer').focus();
+    }
+    
+    function updateTimer() {
+      document.getElementById('timerText').textContent = timeLeft;
+      const pct = (timeLeft / totalTime) * 100;
+      const dasharray = (pct * 2.83) + ' 283';
+      document.getElementById('timerProgress').style.strokeDasharray = dasharray;
+      document.getElementById('timerProgress').style.stroke = timeLeft <= 10 ? '#FF4444' : '#39FF14';
+      
+      if (timeLeft <= 10) {
+        document.getElementById('timerCircle').classList.add('timer-low');
+      } else {
+        document.getElementById('timerCircle').classList.remove('timer-low');
+      }
+    }
+    
+    function updateLiveScores() {
+      // For offline/initial
+      const container = document.getElementById('liveScores');
+      container.innerHTML = `
+        <div class="live-score you">
+          <span class="rank">#1</span>
+          <span>${currentUser.avatar}</span>
+          <span>${currentUser.name.slice(0, 8)}</span>
+          <span class="score">${score}</span>
+        </div>
+      `;
+    }
+    
+    function updateLiveScoresFromData(players) {
+      if (!players) return;
+      
+      const playerArray = Object.values(players).sort((a, b) => b.score - a.score);
+      const container = document.getElementById('liveScores');
+      
+      container.innerHTML = playerArray.map((p, i) => `
+        <div class="live-score ${p.id === currentUser.id ? 'you' : ''}">
+          <span class="rank">#${i + 1}</span>
+          <span>${p.avatar}</span>
+          <span>${p.name.slice(0, 8)}</span>
+          <span class="score">${p.score}</span>
+        </div>
+      `).join('');
+    }
+    
+    function addDigit(d) {
+      const input = document.getElementById('gameAnswer');
+      input.value += d;
+    }
+    
+    function clearAnswer() {
+      document.getElementById('gameAnswer').value = '';
+    }
+    
+    function submitGameAnswer() {
+      const input = document.getElementById('gameAnswer');
+      const userAnswer = parseInt(input.value);
+      const card = document.getElementById('gameCard');
+      
+      if (isNaN(userAnswer)) return;
+      
+      if (userAnswer === currentQuestion.answer) {
+        score++;
+        card.className = 'question-card correct';
+        
+        // Update Firebase
+        if (isOnline && db && currentGame) {
+          db.ref(`games/${currentGame}/players/${currentUser.id}/score`).set(score);
+        }
+        
+        updateLiveScores();
+      } else {
+        card.className = 'question-card incorrect';
+      }
+      
+      setTimeout(() => {
+        generateGameQuestion();
+      }, 300);
+    }
+    
+    function endGame() {
+      clearInterval(timerInterval);
+      
+      if (isHost && isOnline && db) {
+        db.ref(`games/${currentGame}/status`).set('ended');
+      }
+      
+      // Get final scores
+      if (isOnline && db) {
+        db.ref(`games/${currentGame}/players`).once('value').then(snap => {
+          showResults(snap.val());
+        });
+      } else {
+        const stored = localStorage.getItem(`mm_game_${currentGame}`);
+        if (stored) {
+          const data = JSON.parse(stored);
+          data.players[currentUser.id].score = score;
+          showResults(data.players);
+        }
+      }
+    }
+    
+    function showResults(players) {
+      cleanupGame();
+      showScreen('resultsScreen');
+      
+      const playerArray = Object.values(players || {}).sort((a, b) => b.score - a.score);
+      const myPlayer = playerArray.find(p => p.id === currentUser.id);
+      const myRank = playerArray.findIndex(p => p.id === currentUser.id) + 1;
+      const coinsEarned = (myPlayer?.score || score) * 20;
+      
+      // Update user
+      currentUser.coins += coinsEarned;
+      currentUser.stats.correct += myPlayer?.score || score;
+      currentUser.stats.gamesPlayed++;
+      saveUser();
+      
+      // Show podium
+      const podium = document.getElementById('podium');
+      const top3 = playerArray.slice(0, 3);
+      podium.innerHTML = top3.map((p, i) => `
+        <div class="podium-place place-${i + 1}">
+          <span class="podium-avatar">${p.avatar}</span>
+          <span class="podium-name">${p.name}</span>
+          <span class="podium-score">${p.score} correct</span>
+          <span class="podium-badge">${['🥇', '🥈', '🥉'][i]}</span>
+        </div>
+      `).join('');
+      
+      document.getElementById('resultScore').textContent = myPlayer?.score || score;
+      document.getElementById('resultRank').textContent = '#' + myRank;
+      document.getElementById('resultCoins').textContent = '+' + coinsEarned;
+    }
+    
+    function confirmQuit() {
+      document.getElementById('quitModal').classList.remove('hidden');
+    }
+    
+    function hideQuitModal() {
+      document.getElementById('quitModal').classList.add('hidden');
+    }
+    
+    function quitGame() {
+      hideQuitModal();
+      cleanupGame();
+      goToMenu();
+    }
+    
+    function leaveLobby() {
+      if (isOnline && db && currentGame) {
+        db.ref(`games/${currentGame}/players/${currentUser.id}`).remove();
+        if (isHost) {
+          db.ref(`games/${currentGame}`).remove();
+        }
+      }
+      cleanupGame();
+      goToCompete();
+    }
+    
+    function cleanupGame() {
+      if (timerInterval) clearInterval(timerInterval);
+      if (offlineInterval) clearInterval(offlineInterval);
+      if (gameRef && gameListener) {
+        gameRef.off('value', gameListener);
+      }
+      currentGame = null;
+      isHost = false;
+      gameRef = null;
+      gameListener = null;
+    }
+    
+    // ============================================
+    // STATS
+    // ============================================
+    
+    function goToStats() {
+      showScreen('statsScreen');
+      document.getElementById('statsAvatar').textContent = currentUser.avatar;
+      document.getElementById('statsName').textContent = currentUser.name;
+      document.getElementById('statsCoins').textContent = currentUser.coins;
+      document.getElementById('statsCorrect').textContent = currentUser.stats.correct;
+      document.getElementById('statsBestStreak').textContent = currentUser.stats.bestStreak;
+      
+      const accuracy = currentUser.stats.attempts > 0 
+        ? Math.round((currentUser.stats.correct / currentUser.stats.attempts) * 100) 
+        : 0;
+      document.getElementById('statsAccuracy').textContent = accuracy + '%';
+    }
+    
+    // ============================================
+    // SAVE USER
+    // ============================================
+    
+    function saveUser() {
+      localStorage.setItem('multimaster_user', JSON.stringify(currentUser));
+      
+      const savedUsers = JSON.parse(localStorage.getItem('multimaster_users') || '[]');
+      const idx = savedUsers.findIndex(u => u.id === currentUser.id);
+      if (idx >= 0) {
+        savedUsers[idx] = currentUser;
+      } else {
+        savedUsers.push(currentUser);
+      }
+      localStorage.setItem('multimaster_users', JSON.stringify(savedUsers));
+    }
+    
+    // ============================================
+    // KEYBOARD SUPPORT
+    // ============================================
+    
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const practiceScreen = document.getElementById('practiceScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        
+        if (!practiceScreen.classList.contains('hidden')) {
+          checkPracticeAnswer();
+        } else if (!gameScreen.classList.contains('hidden')) {
+          submitGameAnswer();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
