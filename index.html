@@ -1020,20 +1020,22 @@
     </div>
   </div>
 
-  <!-- COMPETE SETUP -->
+  <!-- COMPETE SCREEN - Shows only ONE section at a time -->
   <div class="screen hidden" id="competeScreen">
     <div class="container">
       <div class="header">
-        <button class="btn btn-secondary" onclick="goToMenu()">← Menu</button>
+        <button class="btn btn-secondary" id="competeBackBtn" onclick="handleCompeteBack()">← Menu</button>
         <h2 style="font-family: 'Orbitron', sans-serif; color: var(--bright-green);">⚔️ Competition</h2>
       </div>
       
-      <div id="competeMenu">
+      <!-- SECTION 1: Main Menu (Create or Join) -->
+      <div id="competeMenu" class="card">
+        <h2>Choose an Option</h2>
         <button class="menu-btn" onclick="createGame()">
           <span class="icon">🎮</span>
           <div>
             <span class="text">Create Game</span><br>
-            <span class="desc">Start a new competition</span>
+            <span class="desc">Host a new competition</span>
           </div>
         </button>
         
@@ -1046,16 +1048,17 @@
         </button>
       </div>
       
+      <!-- SECTION 2: Join Game -->
       <div id="joinSection" class="card hidden">
-        <h2>Enter Game Code</h2>
-        <input type="text" class="code-input" id="joinCodeInput" placeholder="####" maxlength="4">
+        <h2>🔗 Enter Game Code</h2>
+        <p>Ask your friend for the 4-digit code</p>
+        <input type="text" class="code-input" id="joinCodeInput" placeholder="####" maxlength="4" inputmode="numeric">
         <div id="joinError" class="error-msg"></div>
         <br>
-        <button class="btn btn-secondary" onclick="hideJoinGame()">← Back</button>
-        <button class="btn btn-primary" onclick="joinGame()">Join Game</button>
+        <button class="btn btn-primary btn-large" onclick="joinGame()">Join Game</button>
       </div>
       
-      <!-- HOST LOBBY -->
+      <!-- SECTION 3: Host Lobby -->
       <div id="hostLobby" class="card hidden">
         <h2>🎮 Your Game</h2>
         <div class="code-display" id="hostCode">----</div>
@@ -1102,7 +1105,7 @@
         <button class="btn btn-secondary" onclick="leaveLobby()">Cancel Game</button>
       </div>
       
-      <!-- GUEST LOBBY -->
+      <!-- SECTION 4: Guest Lobby -->
       <div id="guestLobby" class="card hidden">
         <h2>🔗 Joined Game</h2>
         <div class="code-display" id="guestCode">----</div>
@@ -1666,25 +1669,102 @@
     // COMPETITION MODE
     // ============================================
     
+    // Track which section is showing
+    let competeSection = 'menu'; // 'menu', 'join', 'hostLobby', 'guestLobby'
+    
     function goToCompete() {
+      // Always reset to fresh state
+      cleanupGame();
+      resetCompeteScreen();
       showScreen('competeScreen');
-      document.getElementById('competeMenu').classList.remove('hidden');
+    }
+    
+    function resetCompeteScreen() {
+      // Hide all sections
+      document.getElementById('competeMenu').classList.add('hidden');
       document.getElementById('joinSection').classList.add('hidden');
       document.getElementById('hostLobby').classList.add('hidden');
       document.getElementById('guestLobby').classList.add('hidden');
+      
+      // Show only the main menu
+      document.getElementById('competeMenu').classList.remove('hidden');
+      competeSection = 'menu';
+      
+      // Reset the back button to go to main menu
+      document.getElementById('competeBackBtn').textContent = '← Menu';
+      
+      // Clear any old data
+      document.getElementById('joinCodeInput').value = '';
+      document.getElementById('joinError').textContent = '';
+      document.getElementById('hostCode').textContent = '----';
+      document.getElementById('guestCode').textContent = '----';
+      document.getElementById('hostPlayerList').innerHTML = '';
+      document.getElementById('guestPlayerList').innerHTML = '';
+      
+      // Reset settings buttons to defaults
+      resetSettingsButtons();
+    }
+    
+    function resetSettingsButtons() {
+      // Reset difficulty
+      document.querySelectorAll('#difficultyBtns .setting-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#difficultyBtns .setting-btn:nth-child(2)').classList.add('active');
+      gameDifficulty = 'intermediate';
+      
+      // Reset duration
+      document.querySelectorAll('#durationBtns .setting-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#durationBtns .setting-btn:nth-child(2)').classList.add('active');
+      gameDuration = 60;
+      
+      // Reset question count
+      document.querySelectorAll('#questionBtns .setting-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#questionBtns .setting-btn:nth-child(2)').classList.add('active');
+      questionCount = 20;
+    }
+    
+    function handleCompeteBack() {
+      if (competeSection === 'menu') {
+        // Go back to main menu
+        goToMenu();
+      } else if (competeSection === 'join') {
+        // Go back to compete menu
+        showCompeteSection('menu');
+      } else if (competeSection === 'hostLobby' || competeSection === 'guestLobby') {
+        // Leave the lobby
+        leaveLobby();
+      }
+    }
+    
+    function showCompeteSection(section) {
+      // Hide all sections
+      document.getElementById('competeMenu').classList.add('hidden');
+      document.getElementById('joinSection').classList.add('hidden');
+      document.getElementById('hostLobby').classList.add('hidden');
+      document.getElementById('guestLobby').classList.add('hidden');
+      
+      // Show requested section
+      competeSection = section;
+      
+      if (section === 'menu') {
+        document.getElementById('competeMenu').classList.remove('hidden');
+        document.getElementById('competeBackBtn').textContent = '← Menu';
+      } else if (section === 'join') {
+        document.getElementById('joinSection').classList.remove('hidden');
+        document.getElementById('competeBackBtn').textContent = '← Back';
+        document.getElementById('joinCodeInput').focus();
+      } else if (section === 'hostLobby') {
+        document.getElementById('hostLobby').classList.remove('hidden');
+        document.getElementById('competeBackBtn').textContent = '← Cancel';
+      } else if (section === 'guestLobby') {
+        document.getElementById('guestLobby').classList.remove('hidden');
+        document.getElementById('competeBackBtn').textContent = '← Leave';
+      }
     }
     
     function showJoinGame() {
-      document.getElementById('competeMenu').classList.add('hidden');
-      document.getElementById('joinSection').classList.remove('hidden');
+      showCompeteSection('join');
       document.getElementById('joinCodeInput').value = '';
       document.getElementById('joinError').textContent = '';
-      document.getElementById('joinCodeInput').focus();
-    }
-    
-    function hideJoinGame() {
-      document.getElementById('competeMenu').classList.remove('hidden');
-      document.getElementById('joinSection').classList.add('hidden');
     }
     
     function generateGameCode() {
@@ -1757,10 +1837,7 @@
     }
     
     function showHostLobby(code) {
-      document.getElementById('competeMenu').classList.add('hidden');
-      document.getElementById('joinSection').classList.add('hidden');
-      document.getElementById('hostLobby').classList.remove('hidden');
-      document.getElementById('guestLobby').classList.add('hidden');
+      showCompeteSection('hostLobby');
       document.getElementById('hostCode').textContent = code;
     }
     
@@ -1811,12 +1888,8 @@
     }
     
     function showGuestLobby(code, gameData) {
-      document.getElementById('competeMenu').classList.add('hidden');
-      document.getElementById('joinSection').classList.add('hidden');
-      document.getElementById('hostLobby').classList.add('hidden');
-      document.getElementById('guestLobby').classList.remove('hidden');
+      showCompeteSection('guestLobby');
       document.getElementById('guestCode').textContent = code;
-      
       updateGuestSettings(gameData);
     }
     
@@ -1866,7 +1939,8 @@
         if (!data) {
           if (!resultsShown) {
             alert('Game was cancelled');
-            goToCompete();
+            cleanupGame();
+            showCompeteSection('menu');
           }
           return;
         }
@@ -2260,7 +2334,7 @@
         }
       }
       cleanupGame();
-      goToCompete();
+      showCompeteSection('menu');
     }
     
     function cleanupGame() {
