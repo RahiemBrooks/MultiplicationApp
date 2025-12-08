@@ -57,10 +57,7 @@
       100% { transform: translate(50px, 50px); }
     }
     
-    .floating-shapes {
-      position: absolute;
-      inset: 0;
-    }
+    .floating-shapes { position: absolute; inset: 0; }
     
     .shape {
       position: absolute;
@@ -133,10 +130,7 @@
     }
     
     /* Container */
-    .container {
-      max-width: 500px;
-      width: 100%;
-    }
+    .container { max-width: 500px; width: 100%; }
     
     /* Cards */
     .card {
@@ -155,10 +149,7 @@
       font-size: 20px;
     }
     
-    .card p {
-      color: var(--silver);
-      margin-bottom: 15px;
-    }
+    .card p { color: var(--silver); margin-bottom: 15px; }
     
     /* Inputs */
     input[type="text"], input[type="number"] {
@@ -177,15 +168,9 @@
       margin-bottom: 15px;
     }
     
-    input:focus {
-      border-color: var(--neon-green);
-      box-shadow: var(--glow);
-    }
-    
+    input:focus { border-color: var(--neon-green); box-shadow: var(--glow); }
     input::placeholder { color: var(--silver); }
-    
-    input::-webkit-inner-spin-button,
-    input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
     
     .code-input {
@@ -227,13 +212,7 @@
     
     .btn-secondary:hover { border-color: var(--neon-green); color: var(--neon-green); }
     
-    .btn-large {
-      padding: 20px 40px;
-      font-size: 16px;
-      width: 100%;
-      max-width: 300px;
-    }
-    
+    .btn-large { padding: 20px 40px; font-size: 16px; width: 100%; max-width: 300px; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
     /* Menu Buttons */
@@ -342,9 +321,7 @@
     }
     
     /* Player List */
-    .player-list {
-      margin: 20px 0;
-    }
+    .player-list { margin: 20px 0; }
     
     .player-item {
       display: flex;
@@ -356,19 +333,9 @@
       margin-bottom: 8px;
     }
     
-    .player-avatar {
-      font-size: 24px;
-    }
-    
-    .player-name {
-      flex: 1;
-      font-family: 'Orbitron', sans-serif;
-    }
-    
-    .player-status {
-      font-size: 12px;
-      color: var(--accent);
-    }
+    .player-avatar { font-size: 24px; }
+    .player-name { flex: 1; font-family: 'Orbitron', sans-serif; }
+    .player-status { font-size: 12px; color: var(--accent); }
     
     .badge {
       padding: 3px 8px;
@@ -380,12 +347,10 @@
     .badge-you { background: var(--neon-green); color: var(--black); }
     .badge-host { background: var(--accent); color: var(--black); }
     .badge-ready { background: var(--bright-green); color: var(--black); }
+    .badge-finished { background: #FFD700; color: var(--black); }
     
     /* Settings */
-    .settings-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
+    .settings-group { margin-bottom: 20px; text-align: left; }
     
     .settings-group h4 {
       font-family: 'Orbitron', sans-serif;
@@ -394,11 +359,7 @@
       margin-bottom: 10px;
     }
     
-    .settings-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .settings-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
     
     .setting-btn {
       padding: 10px 15px;
@@ -533,7 +494,7 @@
     }
     
     .timer-track { fill: none; stroke: var(--dark-gray); stroke-width: 6; }
-    .timer-progress { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dasharray 1s linear; }
+    .timer-progress { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dasharray 0.1s linear; }
     
     .timer-text {
       position: absolute;
@@ -591,8 +552,10 @@
     }
     
     .live-score.you { background: rgba(57, 255, 20, 0.2); border: 2px solid var(--neon-green); }
+    .live-score.finished { opacity: 0.7; }
     .live-score .rank { font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--silver); }
     .live-score .score { font-family: 'Orbitron', sans-serif; font-weight: 700; margin-left: auto; }
+    .live-score .done { font-size: 10px; color: #FFD700; }
     
     /* Number Pad */
     .number-pad {
@@ -689,11 +652,10 @@
       display: flex;
       justify-content: center;
       gap: 30px;
+      flex-wrap: wrap;
     }
     
-    .stat {
-      text-align: center;
-    }
+    .stat { text-align: center; }
     
     .stat-value {
       font-family: 'Orbitron', sans-serif;
@@ -709,12 +671,7 @@
     }
     
     /* Feedback */
-    .feedback {
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-    }
-    
+    .feedback { padding: 15px; border-radius: 10px; margin-top: 15px; }
     .feedback.correct { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); }
     .feedback.incorrect { background: rgba(255, 68, 68, 0.1); color: #FF8888; }
     
@@ -769,11 +726,7 @@
     }
     
     /* Error */
-    .error-msg {
-      color: #FF6666;
-      font-size: 14px;
-      margin: 10px 0;
-    }
+    .error-msg { color: #FF6666; font-size: 14px; margin: 10px 0; }
     
     /* Connection Status */
     .connection-status {
@@ -871,17 +824,7 @@
       color: var(--silver);
     }
     
-    /* Waiting for game */
-    .waiting-screen {
-      text-align: center;
-    }
-    
-    .waiting-screen h2 {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--bright-green);
-      margin-bottom: 20px;
-    }
-    
+    /* Spinner */
     .spinner {
       width: 60px;
       height: 60px;
@@ -895,6 +838,25 @@
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    
+    /* Finished overlay */
+    .finished-overlay {
+      text-align: center;
+      padding: 30px;
+    }
+    
+    .finished-overlay h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-green);
+      margin-bottom: 10px;
+    }
+    
+    .finished-score {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 48px;
+      color: var(--bright-green);
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -916,7 +878,6 @@
         <span class="logo-text">MultiMaster</span>
         <span class="logo-subtitle">Eagles Edition</span>
       </div>
-      
       <div class="card">
         <h2>🔧 Connecting...</h2>
         <p>Setting up your game...</p>
@@ -1042,7 +1003,7 @@
           <span class="num" id="practiceNum2">3</span>
           <span class="op">=</span>
         </div>
-        <input type="number" class="answer-input" id="practiceAnswer" placeholder="?">
+        <input type="number" class="answer-input" id="practiceAnswer" placeholder="?" inputmode="numeric">
         <br><br>
         <button class="btn btn-primary btn-large" onclick="checkPracticeAnswer()">Check ✓</button>
         <div id="practiceFeedback"></div>
@@ -1232,6 +1193,23 @@
     </div>
   </div>
 
+  <!-- WAITING FOR RESULTS SCREEN -->
+  <div class="screen hidden" id="waitingResultsScreen">
+    <div class="container">
+      <div class="card">
+        <div class="finished-overlay">
+          <div style="font-size: 60px; margin-bottom: 20px;">⏳</div>
+          <h2>Time's Up!</h2>
+          <p style="color: var(--silver);">Collecting everyone's scores...</p>
+          <div class="finished-score" id="waitingScore">0</div>
+          <p style="color: var(--silver);">Your Score</p>
+          <div class="spinner"></div>
+          <p style="color: var(--silver); margin-top: 20px;" id="waitingStatus">Waiting for all players...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- RESULTS SCREEN -->
   <div class="screen hidden" id="resultsScreen">
     <div class="container">
@@ -1317,7 +1295,7 @@
 
   <script>
     // ============================================
-    // FIREBASE CONFIG - Your database
+    // FIREBASE CONFIG
     // ============================================
     const FIREBASE_URL = 'https://multiplication-app-prototype-default-rtdb.firebaseio.com';
     
@@ -1344,8 +1322,10 @@
     let gameDifficulty = 'intermediate';
     let gameDuration = 60;
     let questionCount = 20;
-    let gameStartTime = null;
+    let gameEndTime = null; // ABSOLUTE end time (timestamp)
     let hasFinished = false;
+    let resultsShown = false;
+    let serverTimeOffset = 0; // Difference between server time and local time
     
     const AVATARS = ['🦅', '🚀', '⚡', '🌟', '🔥', '💎', '🎮', '🏆', '🦁', '🐉', '🦊', '🐺', '🦄', '🐙', '🦈', '🐯', '🤖', '👾', '🎯', '🛸', '🌈', '🎪', '🎭', '🎨'];
     const PASSWORD_IMAGES = ['🌙', '☀️', '⭐', '🌊', '🌺', '🍎', '🎈', '🌲', '❄️'];
@@ -1408,6 +1388,12 @@
     function setupConnection() {
       db = firebase.database();
       
+      // Get server time offset for synchronization
+      db.ref('.info/serverTimeOffset').on('value', (snap) => {
+        serverTimeOffset = snap.val() || 0;
+        console.log('Server time offset:', serverTimeOffset, 'ms');
+      });
+      
       db.ref('.info/connected').on('value', (snap) => {
         if (snap.val() === true) {
           isOnline = true;
@@ -1424,6 +1410,11 @@
           updateConnectionStatus(false);
         }
       });
+    }
+    
+    // Get synchronized server time
+    function getServerTime() {
+      return Date.now() + serverTimeOffset;
     }
     
     function updateConnectionStatus(connected) {
@@ -1700,7 +1691,7 @@
       return Math.floor(1000 + Math.random() * 9000).toString();
     }
     
-    // Generate questions for the game (called by host only)
+    // Generate questions for the game
     function generateQuestions(difficulty, count) {
       const max = DIFFICULTIES[difficulty];
       const qs = [];
@@ -1716,14 +1707,13 @@
           qs.push({ num1, num2, answer: num1 * num2 });
         }
         
-        // If we've used all combinations, allow repeats
         if (used.size >= max * max) used.clear();
       }
       
       return qs;
     }
     
-    // CREATE GAME (Host)
+    // CREATE GAME
     function createGame() {
       if (!isOnline || !db) {
         alert('You must be online to create a game');
@@ -1741,10 +1731,10 @@
         difficulty: gameDifficulty,
         duration: gameDuration,
         questionCount: questionCount,
-        questions: null, // Will be set when game starts
+        questions: null,
         players: {},
-        createdAt: Date.now(),
-        startTime: null
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        endTime: null
       };
       
       gameData.players[currentUser.id] = {
@@ -1754,6 +1744,7 @@
         score: 0,
         currentQuestion: 0,
         finished: false,
+        finishedTime: null,
         isHost: true
       };
       
@@ -1773,7 +1764,7 @@
       document.getElementById('hostCode').textContent = code;
     }
     
-    // JOIN GAME (Guest)
+    // JOIN GAME
     function joinGame() {
       const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
       
@@ -1810,6 +1801,7 @@
           score: 0,
           currentQuestion: 0,
           finished: false,
+          finishedTime: null,
           isHost: false
         }).then(() => {
           showGuestLobby(code, gameData);
@@ -1839,7 +1831,6 @@
       document.querySelectorAll('#difficultyBtns .setting-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
-      // Update Firebase
       if (isHost && currentGame && db) {
         db.ref(`games/${currentGame}/difficulty`).set(diff);
       }
@@ -1873,8 +1864,10 @@
       gameListener = gameRef.on('value', snap => {
         const data = snap.val();
         if (!data) {
-          alert('Game was cancelled');
-          goToCompete();
+          if (!resultsShown) {
+            alert('Game was cancelled');
+            goToCompete();
+          }
           return;
         }
         
@@ -1887,27 +1880,25 @@
         }
         
         // Check if game started
-        if (data.status === 'playing' && data.questions && data.startTime) {
-          gameDifficulty = data.difficulty;
-          gameDuration = data.duration;
-          questionCount = data.questionCount;
-          questions = data.questions;
-          gameStartTime = data.startTime;
-          
-          // Start countdown if not already playing
-          if (!document.getElementById('gameScreen').classList.contains('hidden') === false) {
+        if (data.status === 'playing' && data.questions && data.endTime) {
+          // Only start countdown if we haven't started yet
+          if (!gameEndTime) {
+            gameDifficulty = data.difficulty;
+            gameDuration = data.duration;
+            questionCount = data.questionCount;
+            questions = data.questions;
+            gameEndTime = data.endTime;
+            totalTime = data.duration;
             startCountdown();
           }
         }
         
         // Update live scores during game
-        if (data.status === 'playing') {
+        if (data.status === 'playing' && gameEndTime) {
           updateLiveScoresFromData(data.players);
-        }
-        
-        // Check if game ended
-        if (data.status === 'ended') {
-          showResults(data.players);
+          
+          // Check if all players finished
+          checkAllPlayersFinished(data.players);
         }
       });
     }
@@ -1940,22 +1931,26 @@
       `).join('');
     }
     
-    // START GAME (Host only)
+    // START GAME
     function startGame() {
       if (!isHost || !currentGame || !db) return;
       
-      // Generate questions for all players
+      // Generate questions
       const gameQuestions = generateQuestions(gameDifficulty, questionCount);
-      const startTime = Date.now() + 4000; // Start in 4 seconds (countdown)
+      
+      // Calculate end time: current server time + countdown (4s) + game duration
+      const startDelay = 4000; // 4 second countdown
+      const endTime = getServerTime() + startDelay + (gameDuration * 1000);
       
       db.ref(`games/${currentGame}`).update({
         status: 'playing',
         questions: gameQuestions,
-        startTime: startTime
+        endTime: endTime
       });
       
       questions = gameQuestions;
-      gameStartTime = startTime;
+      gameEndTime = endTime;
+      totalTime = gameDuration;
       startCountdown();
     }
     
@@ -1979,35 +1974,33 @@
       showScreen('gameScreen');
       score = 0;
       currentQuestionIndex = 0;
-      timeLeft = gameDuration;
-      totalTime = gameDuration;
       hasFinished = false;
+      resultsShown = false;
       
-      // Show first question
       showQuestion();
-      updateTimer();
       updateScoreDisplay();
       
-      // Start timer based on server time
+      // Start timer - uses server time for synchronization
       timerInterval = setInterval(() => {
-        if (gameStartTime) {
-          const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
-          timeLeft = Math.max(0, gameDuration - elapsed);
+        if (gameEndTime) {
+          const now = getServerTime();
+          const remaining = Math.max(0, Math.ceil((gameEndTime - now) / 1000));
+          timeLeft = remaining;
           updateTimer();
           
-          if (timeLeft <= 0) {
-            endGame();
+          // Time's up!
+          if (remaining <= 0 && !hasFinished) {
+            finishGame();
           }
         }
-      }, 100);
+      }, 100); // Update frequently for smooth timer
       
       // Sync score to Firebase periodically
       syncInterval = setInterval(() => {
-        if (currentGame && db && currentUser) {
+        if (currentGame && db && currentUser && !hasFinished) {
           db.ref(`games/${currentGame}/players/${currentUser.id}`).update({
             score: score,
-            currentQuestion: currentQuestionIndex,
-            finished: hasFinished
+            currentQuestion: currentQuestionIndex
           });
         }
       }, 500);
@@ -2015,17 +2008,8 @@
     
     function showQuestion() {
       if (currentQuestionIndex >= questions.length) {
-        hasFinished = true;
-        // Player finished all questions - wait for timer
-        document.getElementById('gameCard').innerHTML = `
-          <div style="padding: 40px;">
-            <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
-            <h2 style="font-family: 'Orbitron', sans-serif; color: var(--neon-green);">All Done!</h2>
-            <p style="color: var(--silver);">You answered all ${questions.length} questions!</p>
-            <p style="color: var(--silver);">Score: ${score} correct</p>
-            <p style="color: var(--silver); margin-top: 20px;">Waiting for time to run out...</p>
-          </div>
-        `;
+        // Finished all questions early!
+        finishGame();
         return;
       }
       
@@ -2037,6 +2021,138 @@
       document.getElementById('gameCard').className = 'question-card';
       
       document.getElementById('gameAnswer').focus();
+    }
+    
+    function finishGame() {
+      if (hasFinished) return;
+      hasFinished = true;
+      
+      clearInterval(timerInterval);
+      clearInterval(syncInterval);
+      
+      // Save final score to Firebase
+      if (currentGame && db && currentUser) {
+        db.ref(`games/${currentGame}/players/${currentUser.id}`).update({
+          score: score,
+          currentQuestion: currentQuestionIndex,
+          finished: true,
+          finishedTime: firebase.database.ServerValue.TIMESTAMP
+        });
+      }
+      
+      // Show waiting screen
+      showScreen('waitingResultsScreen');
+      document.getElementById('waitingScore').textContent = score;
+      
+      // Wait for all players, then show results
+      waitForAllPlayers();
+    }
+    
+    function waitForAllPlayers() {
+      let checkCount = 0;
+      const maxChecks = 30; // Wait up to 15 seconds (30 * 500ms)
+      
+      const checkInterval = setInterval(() => {
+        checkCount++;
+        
+        if (!currentGame || !db) {
+          clearInterval(checkInterval);
+          showFinalResults();
+          return;
+        }
+        
+        db.ref(`games/${currentGame}/players`).once('value').then(snap => {
+          const players = snap.val();
+          const playerArray = Object.values(players || {});
+          const totalPlayers = playerArray.length;
+          const finishedPlayers = playerArray.filter(p => p.finished).length;
+          
+          document.getElementById('waitingStatus').textContent = 
+            `${finishedPlayers} of ${totalPlayers} players finished...`;
+          
+          // All players finished OR timeout
+          if (finishedPlayers >= totalPlayers || checkCount >= maxChecks) {
+            clearInterval(checkInterval);
+            
+            // Small delay to ensure all scores are synced
+            setTimeout(() => {
+              showFinalResults();
+            }, 1000);
+          }
+        });
+      }, 500);
+    }
+    
+    function checkAllPlayersFinished(players) {
+      // This is called during gameplay to check if everyone is done
+      if (!hasFinished) return;
+      
+      const playerArray = Object.values(players || {});
+      const allFinished = playerArray.every(p => p.finished);
+      
+      if (allFinished && !resultsShown) {
+        showFinalResults();
+      }
+    }
+    
+    function showFinalResults() {
+      if (resultsShown) return;
+      resultsShown = true;
+      
+      if (!currentGame || !db) {
+        showResultsWithData({});
+        return;
+      }
+      
+      db.ref(`games/${currentGame}/players`).once('value').then(snap => {
+        showResultsWithData(snap.val());
+      });
+    }
+    
+    function showResultsWithData(players) {
+      showScreen('resultsScreen');
+      
+      const playerArray = Object.values(players || {}).sort((a, b) => b.score - a.score);
+      const myPlayer = playerArray.find(p => p.id === currentUser.id);
+      const myRank = playerArray.findIndex(p => p.id === currentUser.id) + 1;
+      const myScore = myPlayer?.score ?? score;
+      const coinsEarned = myScore * 10 + (myRank === 1 ? 50 : myRank === 2 ? 25 : myRank === 3 ? 10 : 0);
+      
+      // Update user
+      currentUser.coins += coinsEarned;
+      currentUser.stats.correct += myScore;
+      currentUser.stats.attempts += questions.length;
+      currentUser.stats.gamesPlayed++;
+      saveUser();
+      
+      // Show podium
+      const podium = document.getElementById('podium');
+      const top3 = playerArray.slice(0, 3);
+      
+      if (top3.length === 0) {
+        podium.innerHTML = '<p style="color: var(--silver);">No results available</p>';
+      } else {
+        podium.innerHTML = top3.map((p, i) => `
+          <div class="podium-place place-${i + 1}">
+            <span class="podium-avatar">${p.avatar}</span>
+            <span class="podium-name">${p.name}</span>
+            <span class="podium-score">${p.score}/${questions.length}</span>
+            <span class="podium-badge">${['🥇', '🥈', '🥉'][i]}</span>
+          </div>
+        `).join('');
+      }
+      
+      document.getElementById('resultScore').textContent = myScore;
+      document.getElementById('resultTotal').textContent = '/ ' + questions.length;
+      document.getElementById('resultRank').textContent = '#' + (myRank || '?');
+      document.getElementById('resultCoins').textContent = '+' + coinsEarned;
+      
+      // Cleanup the game after a delay
+      setTimeout(() => {
+        if (isHost && currentGame && db) {
+          db.ref(`games/${currentGame}`).remove();
+        }
+      }, 5000);
     }
     
     function updateTimer() {
@@ -2064,16 +2180,18 @@
       const container = document.getElementById('liveScores');
       
       container.innerHTML = playerArray.slice(0, 5).map((p, i) => `
-        <div class="live-score ${p.id === currentUser.id ? 'you' : ''}">
+        <div class="live-score ${p.id === currentUser.id ? 'you' : ''} ${p.finished ? 'finished' : ''}">
           <span class="rank">#${i + 1}</span>
           <span>${p.avatar}</span>
           <span>${p.name.slice(0, 8)}</span>
           <span class="score">${p.score}</span>
+          ${p.finished ? '<span class="done">✓</span>' : ''}
         </div>
       `).join('');
     }
     
     function addDigit(d) {
+      if (hasFinished) return;
       const input = document.getElementById('gameAnswer');
       if (input.value.length < 3) {
         input.value += d;
@@ -2081,6 +2199,7 @@
     }
     
     function clearAnswer() {
+      if (hasFinished) return;
       document.getElementById('gameAnswer').value = '';
     }
     
@@ -2103,76 +2222,11 @@
       }
       
       updateScoreDisplay();
-      
-      // Move to next question
       currentQuestionIndex++;
       
       setTimeout(() => {
         showQuestion();
       }, 300);
-    }
-    
-    function endGame() {
-      clearInterval(timerInterval);
-      clearInterval(syncInterval);
-      
-      // Final sync
-      if (currentGame && db && currentUser) {
-        db.ref(`games/${currentGame}/players/${currentUser.id}`).update({
-          score: score,
-          currentQuestion: currentQuestionIndex,
-          finished: true
-        });
-      }
-      
-      // Host ends the game
-      if (isHost && db && currentGame) {
-        setTimeout(() => {
-          db.ref(`games/${currentGame}/status`).set('ended');
-        }, 1000);
-      }
-      
-      // Get final results
-      if (db && currentGame) {
-        db.ref(`games/${currentGame}/players`).once('value').then(snap => {
-          showResults(snap.val());
-        });
-      }
-    }
-    
-    function showResults(players) {
-      cleanupGame();
-      showScreen('resultsScreen');
-      
-      const playerArray = Object.values(players || {}).sort((a, b) => b.score - a.score);
-      const myPlayer = playerArray.find(p => p.id === currentUser.id);
-      const myRank = playerArray.findIndex(p => p.id === currentUser.id) + 1;
-      const myScore = myPlayer?.score || score;
-      const coinsEarned = myScore * 10 + (myRank === 1 ? 50 : myRank === 2 ? 25 : myRank === 3 ? 10 : 0);
-      
-      // Update user
-      currentUser.coins += coinsEarned;
-      currentUser.stats.correct += myScore;
-      currentUser.stats.attempts += questions.length;
-      currentUser.stats.gamesPlayed++;
-      saveUser();
-      
-      // Show podium
-      const podium = document.getElementById('podium');
-      const top3 = playerArray.slice(0, 3);
-      podium.innerHTML = top3.map((p, i) => `
-        <div class="podium-place place-${i + 1}">
-          <span class="podium-avatar">${p.avatar}</span>
-          <span class="podium-name">${p.name}</span>
-          <span class="podium-score">${p.score}/${questions.length}</span>
-          <span class="podium-badge">${['🥇', '🥈', '🥉'][i]}</span>
-        </div>
-      `).join('');
-      
-      document.getElementById('resultScore').textContent = myScore;
-      document.getElementById('resultTotal').textContent = '/ ' + questions.length;
-      document.getElementById('resultRank').textContent = '#' + myRank;
-      document.getElementById('resultCoins').textContent = '+' + coinsEarned;
     }
     
     function confirmQuit() {
@@ -2186,7 +2240,6 @@
     function quitGame() {
       hideQuitModal();
       
-      // Save what we have
       if (currentGame && db && currentUser) {
         db.ref(`games/${currentGame}/players/${currentUser.id}`).update({
           score: score,
@@ -2222,6 +2275,8 @@
       gameListener = null;
       questions = [];
       hasFinished = false;
+      resultsShown = false;
+      gameEndTime = null;
     }
     
     // ============================================
@@ -2276,13 +2331,13 @@
       }
     });
     
-    // Number keys for game
     document.addEventListener('keydown', (e) => {
       const gameScreen = document.getElementById('gameScreen');
-      if (!gameScreen.classList.contains('hidden')) {
+      if (!gameScreen.classList.contains('hidden') && !hasFinished) {
         if (e.key >= '0' && e.key <= '9') {
           addDigit(parseInt(e.key));
         } else if (e.key === 'Backspace') {
+          e.preventDefault();
           clearAnswer();
         }
       }
